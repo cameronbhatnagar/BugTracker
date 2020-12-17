@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="UNCC Notes App">
+        <title>TakeNote - Edit Comment</title>
+        <!-- styles -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+    </head>
+    <body>
+      <nav class="main-menu">
+        <ul>
+          <li><a href="{{ url_for('index') }}">Home</a></li>
+          <li><a href="{{ url_for('get_notes') }}">Notes</a></li>
+
+          {% if user %}
+          <li><a href="{{ url_for('logout') }}">Logout</a></li>
+          {% else %}
+          <li><a href="{{ url_for('login') }}">Login</a></li>
+
+          {% endif %}
+        </ul>
+      </nav>
+
+      <h1>Welcome to TakeNote {{user}}!</h1>
+      <div>
+        <nav>
+			<a href="{{ url_for('index') }}"><img id="logo1" src="{{ url_for('static', filename='logo.png')}}" height="30" width="156" /></a>
+		</nav>
+      </div>
+      <br>
+        <form action="{{ url_for('update_comment', note_id=note.id, comment_id=comment.id) }}" method="post">
+          <p><label>Comment </label></p>
+            <p>
+                <textarea id="commentText" name="comment" rows="6" cols="0">
+                    {% if note %}
+                    {{comment.content}}
+                    {% endif %}
+                </textarea>
+            </p>
+
+          <p><input id="button" type="submit" value="Update Comment" onclick="return confirm('Are you sure you want to edit this comment?');"/>
+        </form>
+    </body>
+</html>

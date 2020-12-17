@@ -65,6 +65,13 @@ ul, li{
   text-decoration: none;
 
 }
+td a {
+  display: block;
+  padding: 10px;
+}
+td a:hover {
+   background-color: #4a565e;
+}
 .main-menu > ul{
   display: table;
   width: 100%;
@@ -97,7 +104,7 @@ th {
   text-align: center;
   font-weight: bold;
   font-family: avenir;
-  padding: 5px 200px;
+  padding: 5px 40px;
   font-size: 1em;
   color: white;
   text-decoration: underline;
@@ -162,7 +169,7 @@ textarea {
 }
 
 #button {
-  background-color: #1ab188;
+  background-color: #933136;
   width: 20%;
   height: 30px;
   border: none;
@@ -177,7 +184,7 @@ textarea {
 #button:hover{
   cursor: pointer;
   background: white;
-  color: #0099ff;
+  color: #933136;
 }
 
 a {

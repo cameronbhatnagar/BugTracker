@@ -70,20 +70,20 @@ textarea:focus {
 }
 
 input[type="submit"] {
-  background: #1ab188;
+  background: #933136;
   border: 0;
   color: white;
   border-radius: 2px;
   padding: 10px 10px;
   font-weight: 400;
-  border: 1px solid #0099ff;
+  border: 1px solid #632023;
   transition: all .3s ease-out;
 }
 
 input[type="submit"]:hover {
   cursor: pointer;
   background: white;
-  color: #0099ff;
+  color: #933136;
 }
 
 .success-wrapper {
@@ -121,4 +121,3 @@ i {
   height: fit-content;
   color: grey;
 }
-

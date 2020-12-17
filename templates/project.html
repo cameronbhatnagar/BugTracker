@@ -27,7 +27,7 @@
             <table>
                 <tr>
                     <th>Text</th>
-                    <th>Rating</th>
+                    <th>Priority</th>
                     <th>Date</th>
                 </tr>
                 <tr>
@@ -92,30 +92,38 @@
             </div>
         </form>
         </div>
-        <div class=bugs>
         {% if project.bugs %}
-          {% if project.bugs|length > 0 %}
-            <h2>Bugs</h2>
-            <ul>
+        <h2>Bugs</h2>
+        <table id="tableLabel">
+            <tr>
+                <th>Text</th>
+                <th>Date Created</th>
+                <th>ID</th>
+            </tr>
             {% for bug in project.bugs %}
-              <li>{{ bug.content }}</li><br>
-                <form action="{{ url_for('update_bug', project_id=project.id, bug_id=bug.id) }}" method="get">
-                    <input type="submit" value="Edit" style="font-size:10px">
-                </form>
-              <form action="{{ url_for('delete_bug', project_id=project.id, bug_id=bug.id) }}" method="post">
-                <input type="submit" value="Delete" style="font-size:10px" onclick="return confirm('Are you sure you want to delete this bug?');">
-              </form><br>
-
+              <tr>
+                  <td>{{ bug.content }}</td>
+                  <td>{{ bug.date_posted }}</td>
+                  <td>{{ bug.id }}</td>
+                  <td>
+                    <form action="{{ url_for('update_bug', project_id=project.id, bug_id=bug.id) }}" method="get">
+                        <input type="submit" value="Edit" style="width: 100px">
+                    </form>
+                  </td>
+                  <td>
+                    <form action="{{ url_for('delete_bug', project_id=project.id, bug_id=bug.id) }}" method="post">
+                      <input type="submit" value="Delete" style="width: 100px" onclick="return confirm('Are you sure you want to delete this bug?');">
+                    </form>
+                  </td>
+              </tr>
             {% endfor %}
-            </ul>
-          {% endif %}
+        </table><br>
         {% endif %}
-        </div>
         <form action="{{ url_for('new_bug', project_id=project.id) }}" method="post">
           <div class="formwrapper">
             <h2 class="title">Add a bug</h2>
             <div class="form-field">
-              {{ form.bug.label }} <br/> {{ form.bug }}
+            <br/> {{ form.bug }}
             </div>
             {{ form.submit }}
           </div>

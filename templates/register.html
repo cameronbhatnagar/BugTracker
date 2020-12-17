@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>BugTracker - Register</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='forms.css') }}">
 </head>
@@ -10,23 +10,17 @@
       <nav class="main-menu">
         <ul>
           <li><a href="{{ url_for('index') }}">Home</a></li>
-          <li><a href="{{ url_for('get_notes') }}">Notes</a></li>
-
-          {% if user %}
+          <li><a href="{{ url_for('get_projects') }}">Projects</a></li>
           <li><a href="{{ url_for('logout') }}">Logout</a></li>
-          {% else %}
-          <li><a href="{{ url_for('login') }}">Login</a></li>
-
-          {% endif %}
         </ul>
       </nav>
-        <h1>Welcome to TakeNote {% if user %}{{user}}{% endif %}!</h1>
+        <h1>Welcome to BugTracker{% if user %} {{user}}{% endif %}!</h1>
         <div>
 			<nav>
 				<a href="{{ url_for('index') }}"><img id="logo1" src="{{ url_for('static', filename='logo.png')}}" height="30" width="156" /></a>
 			</nav>
         </div>
-        <h2>Use this site to maintain and organize your notes.</h2>
+        <h2>Use this site to maintain and organize your bugs.</h2>
         <div class="formwrapper">
             <h2 class="title">Register</h2>
             <form method="POST" action="/register">

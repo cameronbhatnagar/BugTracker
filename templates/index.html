@@ -3,8 +3,8 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="TakeNote - Home">
-        <title>TakeNote - Home</title>
+        <meta name="description" content="BugTracker">
+        <title>BugTracker - Home</title>
         <!-- styles -->
         <link id="css" rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
 
@@ -14,26 +14,24 @@
         <nav class="main-menu">
           <ul>
             <li><a href="{{ url_for('index') }}">Home</a></li>
-            <li><a href="{{ url_for('get_notes') }}">Notes</a></li>
-
+            <li><a href="{{ url_for('get_projects') }}">Projects</a></li>
             {% if user %}
-            <li><a href="{{ url_for('logout') }}">Logout</a></li>
+              <li><a href="{{ url_for('logout') }}">Logout</a></li>
             {% else %}
-            <li><a href="{{ url_for('login') }}">Login</a></li>
-
+              <li><a href="{{ url_for('login') }}">Login</a></li>
             {% endif %}
           </ul>
         </nav>
 
         <div class="center">
-            <h1>Welcome to TakeNote {% if user %}{{user}}{% endif %}!</h1>
-            <h2>Use this site to maintain and organize your notes.</h2>
+            <h1>Welcome to BugTracker{% if user %} {{user}}{% endif %}!</h1>
+            <h2>Use this site to maintain and organize your bugs.</h2>
 
             <img id="logo" src="{{ url_for('static', filename='logo.png')}}"/><br><br>
 
             {% if user %}
-            <form action="{{ url_for('get_notes') }}" >
-                <input id="button" type="submit" value="View Notes">
+            <form action="{{ url_for('get_projects') }}" >
+                <input id="button" type="submit" value="View Projects">
             </form>
             {% else %}
             <form action="{{ url_for('register') }}" >

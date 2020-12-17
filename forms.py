@@ -50,13 +50,13 @@ class LoginForm(FlaskForm):
         if db.session.query(User).filter_by(email=field.data).count() == 0:
             raise ValidationError('Incorrect username or password.')
 
-class CommentForm(FlaskForm):
+class BugForm(FlaskForm):
     class Meta:
         csrf = False
 
-    comment = TextAreaField('Comment',validators=[Length(min=1)])
+    bug = TextAreaField('Bug',validators=[Length(min=1)])
 
-    submit = SubmitField('Add Comment')
+    submit = SubmitField('Add Bug')
 
 class RateForm(FlaskForm):
     class Meta:

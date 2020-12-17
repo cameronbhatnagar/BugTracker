@@ -1,36 +1,36 @@
-# FLASK Tutorial 1 -- We show the bare bones code to get an app up and running
-
 # imports
-import os                 # os is used to get environment variables IP & PORT
-from flask import Flask   # Flask is the web app that we will customize
+import os
+from flask import Flask
 from flask import render_template
 from flask import request
 from flask import redirect, url_for
 from database import db
-from models import Note as Note
+from models import Project as Project
 from models import User as User
 from forms import RegisterForm
 from flask import session
 import bcrypt
 from forms import LoginForm
-from models import Comment as Comment
-from forms import RegisterForm, LoginForm, CommentForm
+from models import Bug as Bug
+from forms import RegisterForm, LoginForm, BugForm
 
-app = Flask(__name__)     # create an app
+# Creates the application
+app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///flask_note_app.db'
+# Sets up the databases
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///flask_project_app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS']= False
-#  Bind SQLAlchemy db object to this Flask app
+
+# Binds DB to the app
 db.init_app(app)
+
 # Setup models
 with app.app_context():
-    db.create_all()   # run under the app context
+    db.create_all()
 
-# @app.route is a decorator. It gives the function "index" special powers.
-# In this case it makes it so anyone going to "your-url/" makes this function
-# get called. What it returns is what is shown as the web page
-
-
+#
+# Homepage/ Index
+#
 @app.route('/')
 @app.route('/index')
 def index():
@@ -38,76 +38,75 @@ def index():
         return render_template("index.html", user=session['user'])
     return render_template('index.html')
 
-
-@app.route('/notes')
-def get_notes():
+@app.route('/projects')
+def get_projects():
     if session.get('user'):
-        my_notes = db.session.query(Note).filter_by(user_id=session['user_id']).all()
-        return render_template('notes.html', notes=my_notes, user=session['user'])
+        my_projects = db.session.query(Project).filter_by(user_id=session['user_id']).all()
+        return render_template('projects.html', projects=my_projects, user=session['user'])
     else:
         return redirect(url_for('login'))
 
 
-@app.route('/notes/<note_id>')
-def get_note(note_id):
+@app.route('/projects/<project_id>')
+def get_project(project_id):
     if session.get('user'):
-        my_note = db.session.query(Note).filter_by(id=note_id).one()
+        my_project = db.session.query(Project).filter_by(id=project_id).one()
 
-        form = CommentForm()
+        form = BugForm()
 
-        return render_template('note.html', note = my_note, user = session['user'], form=form)
+        return render_template('project.html', project = my_project, user = session['user'], form=form)
     else:
         return render_template('login')
 
 
-@app.route('/notes/new', methods=['GET', 'POST'])
-def new_note():
+@app.route('/projects/new', methods=['GET', 'POST'])
+def new_project():
 
     if session.get('user'):
         if request.method == 'POST':
             title = request.form['title']
-            text = request.form['noteText']
+            text = request.form['projectText']
             from datetime import date
             today = date.today()
             today = today.strftime("%m-%d-%Y")
-            new_record = Note(title, text, today, session['user_id'])
+            new_record = Project(title, text, today, session['user_id'])
             db.session.add(new_record)
             db.session.commit()
 
-            return redirect(url_for('get_notes', user = session['user']))
+            return redirect(url_for('get_projects', user = session['user']))
         else:
             return render_template('new.html', user = session['user'])
     else:
         return redirect(url_for('login'))
 
 
-@app.route('/notes/edit/<note_id>', methods=['GET', 'POST'])
-def update_note(note_id):
+@app.route('/projects/edit/<project_id>', methods=['GET', 'POST'])
+def update_project(project_id):
     if session.get('user'):
         if request.method == 'POST':
             title = request.form['title']
-            text = request.form['noteText']
-            note = db.session.query(Note).filter_by(id=note_id).one()
-            note.title = title
-            note.text = text
-            db.session.add(note)
+            text = request.form['projectText']
+            project = db.session.query(Project).filter_by(id=project_id).one()
+            project.title = title
+            project.text = text
+            db.session.add(project)
             db.session.commit()
-            return redirect(url_for('get_notes', note_id=note_id))
+            return redirect(url_for('get_projects', project_id=project_id))
         else:
-            my_note = db.session.query(Note).filter_by(id=note_id).one()
+            my_project = db.session.query(Project).filter_by(id=project_id).one()
 
-            return render_template('new.html', note=my_note, user=session['user'])
+            return render_template('new.html', project=my_project, user=session['user'])
     else:
         return redirect(url_for('login'))
 
 
-@app.route('/notes/delete/<note_id>', methods=['POST'])
-def delete_note(note_id):
+@app.route('/projects/delete/<project_id>', methods=['POST'])
+def delete_project(project_id):
     if session.get('user'):
-        my_note = db.session.query(Note).filter_by(id=note_id).one()
-        db.session.delete(my_note)
+        my_project = db.session.query(Project).filter_by(id=project_id).one()
+        db.session.delete(my_project)
         db.session.commit()
-        return redirect(url_for('get_notes'))
+        return redirect(url_for('get_projects'))
     else:
         return redirect(url_for('login'))
 
@@ -126,7 +125,7 @@ def register():
         the_user = db.session.query(User).filter_by(email=request.form['email']).one()
         session['user_id'] = the_user.id
 
-        return redirect(url_for('get_notes'))
+        return redirect(url_for('get_projects'))
     return render_template('register.html', form=form)
 
 
@@ -143,7 +142,7 @@ def login():
             session['user'] = the_user.first_name
             session['user_id'] = the_user.id
             # render view
-            return redirect(url_for('get_notes'))
+            return redirect(url_for('get_projects'))
 
         # password check failed
         # set error message to alert user
@@ -161,82 +160,82 @@ def logout():
     return redirect(url_for('index'))
 
 
-@app.route('/notes/<note_id>/comment', methods=['POST'])
-def new_comment(note_id):
+@app.route('/projects/<project_id>/bug', methods=['POST'])
+def new_bug(project_id):
     if session.get('user'):
-        comment_form = CommentForm()
+        bug_form = BugForm()
         # validate_on_submit only validates using POST
-        if comment_form.validate_on_submit():
-            # get comment data
-            comment_text = request.form['comment']
-            new_record = Comment(comment_text, int(note_id), session['user_id'])
+        if bug_form.validate_on_submit():
+            # get bug data
+            bug_text = request.form['bug']
+            new_record = Bug(bug_text, int(project_id), session['user_id'])
             db.session.add(new_record)
             db.session.commit()
 
-        return redirect(url_for('get_note', note_id=note_id))
+        return redirect(url_for('get_project', project_id=project_id))
 
     else:
         return redirect(url_for('login'))
 
 
-@app.route('/notes/delete/<note_id>/<comment_id>', methods=['POST'])
-def delete_comment(note_id, comment_id):
+@app.route('/projects/delete/<project_id>/<bug_id>', methods=['POST'])
+def delete_bug(project_id, bug_id):
     if session.get('user'):
-        my_comment = db.session.query(Comment).filter_by(id=comment_id).one()
-        db.session.delete(my_comment)
+        my_bug = db.session.query(Bug).filter_by(id=bug_id).one()
+        db.session.delete(my_bug)
         db.session.commit()
-        return redirect(url_for('get_note', note_id=note_id))
+        return redirect(url_for('get_project', project_id=project_id))
     else:
         return redirect(url_for('login'))
 
 
-@app.route('/notes/edit/<note_id>/<comment_id>', methods=['GET', 'POST'])
-def update_comment(note_id, comment_id):
+@app.route('/projects/edit/<project_id>/<bug_id>', methods=['GET', 'POST'])
+def update_bug(project_id, bug_id):
     if session.get('user'):
         if request.method == 'POST':
-            comment_text = request.form['comment']
-            comment = db.session.query(Comment).filter_by(id=comment_id).one()
-            comment.content = comment_text
-            db.session.add(comment)
+            bug_text = request.form['bug']
+            bug = db.session.query(Bug).filter_by(id=bug_id).one()
+            bug.content = bug_text
+            db.session.add(bug)
             db.session.commit()
-            return redirect(url_for('get_note', note_id=note_id))
+            return redirect(url_for('get_project', project_id=project_id))
         else:
-            my_note = db.session.query(Note).filter_by(id=note_id).one()
-            my_comment = db.session.query(Comment).filter_by(id=comment_id).one()
+            my_project = db.session.query(Project).filter_by(id=project_id).one()
+            my_bug = db.session.query(Bug).filter_by(id=bug_id).one()
 
-            return render_template("edit_comment.html", note=my_note, comment=my_comment, user=session['user'])
+            return render_template("edit_bug.html", project=my_project, bug=my_bug, user=session['user'])
     else:
         return redirect(url_for('login'))
 
 
-@app.route('/notes/<note_id>/rate', methods=['POST'])
-def rate_note(note_id):
+@app.route('/projects/<project_id>/rate', methods=['POST'])
+def rate_project(project_id):
     if session.get('user'):
         if request.method == 'POST':
             rate = request.form['rating']
-            note = db.session.query(Note).filter_by(id=note_id).one()
-            note.rate = rate
-            db.session.add(note)
+            project = db.session.query(Project).filter_by(id=project_id).one()
+            project.rate = rate
+            db.session.add(project)
             db.session.commit()
-            return redirect(url_for('get_note', note_id=note_id))
+            return redirect(url_for('get_project', project_id=project_id))
     else:
         return redirect(url_for('login'))
 
 
-@app.route('/notes/sort/title')
-def sort_notes_title():
+@app.route('/projects/sort/title')
+def sort_projects_title():
     if session.get('user'):
-        my_notes = db.session.query(Note).filter_by(user_id=session['user_id']).order_by(Note.title).all()
-        return render_template('notes.html', notes=my_notes, user=session['user'])
+        my_projects = db.session.query(Project).filter_by(user_id=session['user_id']).order_by(Project.title).all()
+        return render_template('projects.html', projects=my_projects, user=session['user'])
     else:
         return redirect(url_for('login'))
 
 
-@app.route('/notes/sort/date')
-def sort_notes_date():
+@app.route('/projects/sort/date')
+def sort_projects_date():
     if session.get('user'):
-        my_notes = db.session.query(Note).filter_by(user_id=session['user_id']).order_by(Note.date).all()
-        return render_template('notes.html', notes=my_notes, user=session['user'])
+        my_projects = db.session.query(Project).filter_by(user_id=session['user_id']).order_by(Project.date).all()
+        return render_template('projects.html', projects=my_projects, user=session['user'])
     else:
         return redirect(url_for('login'))
 
@@ -247,6 +246,6 @@ app.config['SECRET_KEY'] = 'SE3155'
 # To see the web page in your web browser, go to the url,
 #   http://127.0.0.1:5000
 
-# Note that we are running with "debug=True", so if you make changes and save it
+# Project that we are running with "debug=True", so if you make changes and save it
 # the server will automatically update. This is great for development but is a
 # security risk for production.

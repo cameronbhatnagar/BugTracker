@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="BugTracker">
+        <title>BugTracker - Projects</title>
+        <!-- styles -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+    </head>
+    <body>
+
+      <nav class="main-menu">
+        <ul>
+          <li><a href="{{ url_for('index') }}">Home</a></li>
+          <li><a href="{{ url_for('get_projects') }}">Projects</a></li>
+          <li><a href="{{ url_for('logout') }}">Logout</a></li>
+        </ul>
+      </nav>
+
+        <h1>Welcome to BugTracker {{user}}!</h1>
+        <div>
+			<nav>
+				<a href="{{ url_for('index') }}"><img id="logo1" src="{{ url_for('static', filename='logo.png')}}" height="30" width="156" /></a>
+			</nav>
+        </div>
+
+        <h2>List of Projects</h2>
+
+        <table id="tableLabel">
+            <tr>
+                <th><a href="{{ url_for('sort_projects_title') }}">Title</th>
+                <th><a href="{{ url_for('sort_projects_date') }}">Date</th>
+            </tr>
+            {% for project in projects %}
+            <tr>
+                <td><a href="{{ url_for('get_project', project_id=project.id) }}">{{ project.title }}</a></td>
+                <td><a href="{{ url_for('get_project', project_id=project.id) }}">{{ project.date }}</td>
+                <td><a href="{{ url_for('update_project', project_id=project.id) }}">Edit</a></td>
+                <td>
+                  <form action="{{ url_for('delete_project', project_id=project.id) }}" method="post">
+                    <input type="submit" onclick="return confirm('Are you sure you want to delete this project?');" value="Delete">
+                  </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table><br>
+      <form action="{{ url_for('new_project') }}" >
+          <input id="button" type="submit" value="New Project">
+      </form>
+
+    </body>
+</html>

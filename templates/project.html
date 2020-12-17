@@ -3,8 +3,8 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="UNCC Notes App">
-        <title>TakeNote - View your Note</title>
+        <meta name="description" content="BugTracker">
+        <title>BugTracker - {{project.title}}</title>
         <!-- styles -->
         <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='forms.css') }}">
@@ -15,21 +15,15 @@
       <nav class="main-menu">
         <ul>
           <li><a href="{{ url_for('index') }}">Home</a></li>
-          <li><a href="{{ url_for('get_notes') }}">Notes</a></li>
-
-          {% if user %}
+          <li><a href="{{ url_for('get_projects') }}">Projects</a></li>
           <li><a href="{{ url_for('logout') }}">Logout</a></li>
-          {% else %}
-          <li><a href="{{ url_for('login') }}">Login</a></li>
-
-          {% endif %}
         </ul>
       </nav>
 
-        <h1>Welcome to TakeNote {{user}}!</h1>
+        <h1>Welcome to BugTracker {{user}}!</h1>
 
-        <h2 style="color: #00BFFF;">{{note.title}}</h2>
-        <div id="noteDetails">
+        <h2 style="color: #00BFFF;">{{project.title}}</h2>
+        <div id="projectDetails">
             <table>
                 <tr>
                     <th>Text</th>
@@ -37,34 +31,34 @@
                     <th>Date</th>
                 </tr>
                 <tr>
-                    <td>{{ note.text }}</td>
+                    <td>{{ project.text }}</td>
                     <td>
 
-                      {% if note.rate == 1 %}
+                      {% if project.rate == 1 %}
                         <span class="fa fa-star checked"></span>
                         <span class="fa fa-star"></span>
                         <span class="fa fa-star"></span>
                         <span class="fa fa-star"></span>
                         <span class="fa fa-star"></span>
-                      {% elif note.rate == 2 %}
+                      {% elif project.rate == 2 %}
                         <span class="fa fa-star checked"></span>
                         <span class="fa fa-star checked"></span>
                         <span class="fa fa-star"></span>
                         <span class="fa fa-star"></span>
                         <span class="fa fa-star"></span>
-                      {% elif note.rate == 3 %}
+                      {% elif project.rate == 3 %}
                         <span class="fa fa-star checked"></span>
                         <span class="fa fa-star checked"></span>
                         <span class="fa fa-star checked"></span>
                         <span class="fa fa-star"></span>
                         <span class="fa fa-star"></span>
-                      {% elif note.rate == 4 %}
+                      {% elif project.rate == 4 %}
                         <span class="fa fa-star checked"></span>
                         <span class="fa fa-star checked"></span>
                         <span class="fa fa-star checked"></span>
                         <span class="fa fa-star checked"></span>
                         <span class="fa fa-star"></span>
-                      {% elif note.rate == 5 %}
+                      {% elif project.rate == 5 %}
                         <span class="fa fa-star checked"></span>
                         <span class="fa fa-star checked"></span>
                         <span class="fa fa-star checked"></span>
@@ -78,19 +72,19 @@
                         <span class="fa fa-star"></span>
                       {% endif %}
                     </td>
-                    <td>{{ note.date }}</td>
+                    <td>{{ project.date }}</td>
                 </tr>
 
             </table><br>
-            <form action="{{ url_for('update_note', note_id=note.id) }}" >
+            <form action="{{ url_for('update_project', project_id=project.id) }}" >
                 <input  type="submit" value="Edit" style="width: 100px">
             </form>
-            <form action="{{ url_for('delete_note', note_id=note.id) }}" method="post">
-                <input onclick="return confirm('Are you sure you want to delete this note?');" type="submit" value="Delete" style="width: 100px">
+            <form action="{{ url_for('delete_project', project_id=project.id) }}" method="post">
+                <input onclick="return confirm('Are you sure you want to delete this project?');" type="submit" value="Delete" style="width: 100px">
             </form>
         </div><br>
         <div class="formwrapper">
-        <form action="{{ url_for('rate_note', note_id=note.id) }}" method="post">
+        <form action="{{ url_for('rate_project', project_id=project.id) }}" method="post">
             <div>
                 <h2 class="title">Priority Rating</h2>
                 <input type="number" name=rating min="1" max="5">
@@ -98,18 +92,18 @@
             </div>
         </form>
         </div>
-        <div class=comments>
-        {% if note.comments %}
-          {% if note.comments|length > 0 %}
-            <h2>Comments</h2>
+        <div class=bugs>
+        {% if project.bugs %}
+          {% if project.bugs|length > 0 %}
+            <h2>Bugs</h2>
             <ul>
-            {% for comment in note.comments %}
-              <li>{{ comment.content }}</li><br>
-                <form action="{{ url_for('update_comment', note_id=note.id, comment_id=comment.id) }}" method="get">
+            {% for bug in project.bugs %}
+              <li>{{ bug.content }}</li><br>
+                <form action="{{ url_for('update_bug', project_id=project.id, bug_id=bug.id) }}" method="get">
                     <input type="submit" value="Edit" style="font-size:10px">
                 </form>
-              <form action="{{ url_for('delete_comment', note_id=note.id, comment_id=comment.id) }}" method="post">
-                <input type="submit" value="Delete" style="font-size:10px" onclick="return confirm('Are you sure you want to delete this comment?');">
+              <form action="{{ url_for('delete_bug', project_id=project.id, bug_id=bug.id) }}" method="post">
+                <input type="submit" value="Delete" style="font-size:10px" onclick="return confirm('Are you sure you want to delete this bug?');">
               </form><br>
 
             {% endfor %}
@@ -117,11 +111,11 @@
           {% endif %}
         {% endif %}
         </div>
-        <form action="{{ url_for('new_comment', note_id=note.id) }}" method="post">
+        <form action="{{ url_for('new_bug', project_id=project.id) }}" method="post">
           <div class="formwrapper">
-            <h2 class="title">Add a comment</h2>
+            <h2 class="title">Add a bug</h2>
             <div class="form-field">
-              {{ form.comment.label }} <br/> {{ form.comment }}
+              {{ form.bug.label }} <br/> {{ form.bug }}
             </div>
             {{ form.submit }}
           </div>
